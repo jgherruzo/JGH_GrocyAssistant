@@ -24,3 +24,10 @@ Grocy Assistant will have the next features:
 - specify the shop: you could specify what shop you go, so, from the shopping list, the command to buy each item will be generated automatically
 - ask for shopping list: bot will add each item below the minimum limit to the list that contains the item added manually
 - remove from the shopping list: You could remove it to not buy or just remove each time you buy it
+
+#### 2.1.2 Consumption
+
+
+
+
+IMPORTANTE añadir Generico en la lista de tiendas y lanzar el inject antes de usar el grocy assistant
