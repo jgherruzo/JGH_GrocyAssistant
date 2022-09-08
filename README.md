@@ -1,5 +1,5 @@
 # JGH_GrocyAssistant
-Develop a Grocy Assistant using NodeRed, Telegram and Rhasppy
+Develop a Grocy Assistant using NodeRed, Telegram
 
 ## 1. Introduction
 ### 1.1 Context
@@ -10,7 +10,7 @@ I found some problems with the efficiency of using barcodes, due to it required 
 ### 1.2 Goal
 This proyect try to minimize the work required into grocy web app. To do that, a telegram bot will be developed in order to could load all the items you buy during the own buying process. In a similar way, consumption could be done throught telegram. Another options will be ask for an specific item info or ask for the shopping list.
 
-Due to another familiar could consume or buy thing for your inventory and could not use telegram, Rhasppy will help to control this part using a voice recognition system.
+Due to another familiar could consume or buy thing for your inventory and could not use telegram, Rhasppy will help to control this part using a voice recognition system. It will be developed in the future.
 
 ## 2. Define
 
@@ -27,7 +27,26 @@ Grocy Assistant will have the next features:
 
 #### 2.1.2 Consumption
 
+This feature helps you to control stocks level. It works below the next command:
 
+/c_idxunits
 
+/c is the main command, it is used by a switch to control flow. After check that, Node red send to a function where id and units are splitted and grocy API call is build. Then a switch check if function result is correct and send info to the telegram msg builder.
+
+#### 2.1.3 Info
+
+This feature helps you to control check stocks level. It works below the next command:
+
+/info_id
+
+/info is the main command, it is used by a switch to control flow. After check that, Node red send to a function where id is checked and grocy API call is build. Then a switch check if function result is correct and send the API call. Then, API answer is extracted and it is send to the telegram builder
+
+#### 2.1.4 Info
+
+This feature helps you to check id and names. It works below the next command:
+
+/get_p
+
+/get is the main command, it is used by a switch to control flow. After check that, Node red send to a function where  grocy API call is build. After that, API call is done and the answer is sent to a function where the msg is prepared. Then it is sent to msg telegram builder.
 
 IMPORTANTE añadir Generico en la lista de tiendas y lanzar el inject antes de usar el grocy assistant
