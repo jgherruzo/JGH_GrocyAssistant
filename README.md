@@ -49,4 +49,15 @@ This feature helps you to check id and names. It works below the next command:
 
 /get is the main command, it is used by a switch to control flow. After check that, Node red send to a function where  grocy API call is build. After that, API call is done and the answer is sent to a function where the msg is prepared. Then it is sent to msg telegram builder.
 
+#### 2.1.5 Add
+
+This feature helps you add items to the shopping list. Also if you defined a minimum level, when Grocy add it to the shoppping list add just the minimum you define, but maybe you want to buy more units. It works below the next command:
+
+/a_itemxunits
+
+/a is the main command, it is used by a switch to control flow. After check that, Node red send to a function where  grocy API call is build. After that, it is checked if everything goes well and API call is done. Then the answer is sent to a function where the msg done is prepared. Then it is sent to msg telegram builder.
+
+#### 2.1.6 Buy
+
+
 IMPORTANTE añadir Generico en la lista de tiendas y lanzar el inject antes de usar el grocy assistant
