@@ -1,6 +1,13 @@
 # JGH_GrocyAssistant
 Develop a Grocy Assistant using NodeRed, Telegram
 
+## IMPORTANT
+After using GA you need to create a telegram boot. I advise to create a group and including you rbot, using this group will increase the security of your bot.
+
+If you would like to use GA you must add "Generico" as shop in your grocy. After that, you must manually add it clicking on inject node or just send command /shop_Generico
+
+Search for "WARNING" node. They are close to a node where you must include some personal info: Grocy IP, Grocy API key or telegram chat id.
+
 ## 1. Introduction
 ### 1.1 Context
 I would like to improve our control over our grocery. Track the evolution of our inventory and cost.
@@ -65,7 +72,15 @@ This feature helps you add items to the inventory from the shop:
 
 item id and units you buy are mandatory, while the other are just an option. If you dont specify, 0 cost and no due date will be specified.
 
-#### 2.1.7 Shopping list
+#### 2.1.7 Shop
+
+This feature helps you to define where shop you are. 
+
+/shop_name
+
+Once shop name is saved, when you call for shopping list, this fill all the item that you usually buy in that shop.
+
+#### 2.1.8 Shopping list
 
 This feature helps you to check your shopping list each time you want. 
 
@@ -73,6 +88,41 @@ This feature helps you to check your shopping list each time you want.
 
 Once you send the command, Grocy assistant check all items below the minimum level you define and add it to the shopping list. Then it show to you.
 
+For each item, GA check if this item is usually bougth in th eshop you specify and get to you the command /X_item_units_Shop. If the item is not from this shop, the command will be /X_item_units, so you could check if you buy this item in that shop or not.
+
+If you don't usually buy, but, today wnat to do, just click on the command. GA will read /x and get you a buying command: /b_itemxunitsx0xshopx2999-12-12 so you could copy and modify prize and due date, making easier all the process 
+
+#### 2.1.9 Replace
+
+This feature helps you remove items from the shopping list:
+
+/r_itemxunits
+
 ## 3. Analysis
 
-IMPORTANTE añadir Generico en la lista de tiendas y lanzar el inject antes de usar el grocy assistant
+#### 3.1 Product list
+
+Each time I ask for product list, I click on info command to check inventory, so it will be faster to show inventory directly over product list
+
+#### 3.2 Consumption
+
+Consumption process is easy, however, it is not productive for item you consume regurarly. My advise is to use recipe for this kind of consumption and left manual command just for items that take long time to consume (i.e. aditives, milk, etc) and take a look of your inventory at least once per week.
+
+#### 3.2 Buying
+
+Each time we click on /x command over the shopping list, prize must be replaced and due date format broke the command, so even if you want to click directly over the command you cannot.
+
+/x command must look for the las prize and date will be written as YYYYMMDD instead of YYYY-MM-DD in order to to broke the command.
+
+## 4. Improvements
+
+#### 4.1 Pending
+- Date modification for buying process
+- show inventory in the product list
+- show prize in the automatic buy command
+- Simplify NODERED flow
+- 
+#### 4.2 Implemented
+- GA check product over date once per day and send a msg
+- Replace items from shopping list each time they are bougth
+- Shopping list show a shop list to make easier set the shop you are buying 
