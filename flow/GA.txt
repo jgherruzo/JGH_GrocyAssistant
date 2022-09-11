@@ -1,0 +1,2663 @@
+[
+    {
+        "id": "839f19610f7127b1",
+        "type": "tab",
+        "label": "Grocy Assistant",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "d6fb1441f931bf28",
+        "type": "function",
+        "z": "839f19610f7127b1",
+        "name": "Telegram msg template",
+        "func": "var str_receive = msg.payload;\nmsg.payload = {};\nmsg.payload.chatId = -\"your chat id\";\nmsg.payload.type = \"message\";\nmsg.payload.content = str_receive;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3390,
+        "y": 260,
+        "wires": [
+            [
+                "292404036da59f94"
+            ]
+        ]
+    },
+    {
+        "id": "292404036da59f94",
+        "type": "telegram sender",
+        "z": "839f19610f7127b1",
+        "name": "Grocy Assistant",
+        "bot": "b45e8c8b8464b088",
+        "haserroroutput": false,
+        "outputs": 1,
+        "x": 3720,
+        "y": 420,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "51e95894136cb71b",
+        "type": "telegram receiver",
+        "z": "839f19610f7127b1",
+        "name": "Home requirement",
+        "bot": "b45e8c8b8464b088",
+        "saveDataDir": "",
+        "filterCommands": false,
+        "x": 110,
+        "y": 300,
+        "wires": [
+            [
+                "dfda5b7582b5f8ed",
+                "d5c8e22a9261e6f2"
+            ],
+            [
+                "883c229bd7ae6bf0"
+            ]
+        ]
+    },
+    {
+        "id": "dfda5b7582b5f8ed",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 3",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 380,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "883c229bd7ae6bf0",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "Receive Error",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 340,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "5105741666c18e09",
+        "type": "comment",
+        "z": "839f19610f7127b1",
+        "name": "Nomenclature",
+        "info": "*/info_id --> returns inventory\n*/b_idxXxYxTxD --> buy X units at y prize with D final date from T shop (Date and shop are optional)\n*/c_idxX --> Consume X units\n*/a_idxX --> add item to the shopping list X units\n*/get_l --> get shop list\n*/get_p --> product list\n\n*/r_id --> remove from shopping list and return a buy code to copy and paste\n*/help_lg --> text that explain the code in lg lenguage\n*/shop_Name --> modify current shop in order to help autocode after send /r command\nhay que meter un filtro para que no meta tiendas que no existen\n\n\n*--> esto mejora tambien/PENDIENTE QUE CUANDO COMPRES ALGO SE COMPRUEBE SI ESTA EN LA LISTA Y SE ELIMINE\n\ncomo mejora añadir el inventario a la lista de productos\ncambiar formato de fecha para agilizar los comandos de compra\ncrear comando con ultimo precio",
+        "x": 90,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "d5c8e22a9261e6f2",
+        "type": "function",
+        "z": "839f19610f7127b1",
+        "name": "Read Comand",
+        "func": "var arr_tel = msg.payload;\n\nvar mystring = arr_tel.content;\n\nvar str_chat = arr_tel.chatId;\n\n// esto es un filtro para que solo sirva desde nuestro grupo\nif (str_chat == \"you chat id\") {\n    var arr_string = mystring.split(\"_\");\n\n    msg.topic = arr_string[0];\n    msg.payload.t_cmd = arr_string[1];\n    msg.payload.g_API = \"your api key\";\n    msg.payload.g_IP = \"your ip\";\n\n} else {\n\n    msg.topic = \"\";\n    msg.payload = \"\";\n\n}\n\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 360,
+        "y": 280,
+        "wires": [
+            [
+                "b5a56b6a8f1d5e7d",
+                "243e22ba65d6b21a",
+                "5aea33ce0f69bc49"
+            ]
+        ]
+    },
+    {
+        "id": "b5a56b6a8f1d5e7d",
+        "type": "switch",
+        "z": "839f19610f7127b1",
+        "name": "Select Process",
+        "property": "topic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "/c",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "/b",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "/info",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "/a",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "/get",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "/shop",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "/help",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "/x",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "/r",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 9,
+        "x": 560,
+        "y": 280,
+        "wires": [
+            [
+                "8599be5f2baf1359"
+            ],
+            [
+                "0f89fdb56eecf26b"
+            ],
+            [
+                "8042daa75eb79f67"
+            ],
+            [
+                "a3b108c547b66c69"
+            ],
+            [
+                "2efdcd8e0ea0263b",
+                "58dda3aab818876d"
+            ],
+            [
+                "2f1f95757bcd667b"
+            ],
+            [
+                "dd783137d4d7c48d",
+                "1a5c144f76736501"
+            ],
+            [
+                "8c7d7402ed07c984"
+            ],
+            [
+                "2add782d4b9bbb69",
+                "0303795744b34273"
+            ]
+        ]
+    },
+    {
+        "id": "8599be5f2baf1359",
+        "type": "function",
+        "z": "839f19610f7127b1",
+        "name": "Consume",
+        "func": "var arr_msg = msg.payload.t_cmd.split(\"x\");\n\n//check if has the correct format\nvar int_len = arr_msg.length;\n\nif (int_len==2){\n    var product_id = arr_msg[0];\n    var amount = parseInt(arr_msg[1]);\n    \n    var str_URL =\"http://\";\n    str_URL = str_URL+msg.payload.g_IP;\n    str_URL = str_URL +\"/api/stock/products/\";\n    str_URL = str_URL + product_id;\n    str_URL = str_URL +\"/consume\";\n\n    var json_Header = {\n        \"Accept\": \"application/json\", \"Content-Type\": \"application/json\", \"GROCY-API-KEY\": msg.payload.g_API, \"cache-control\": \"no-cache\"};\n    \n    var json_payload = {\n        \"amount\": amount, \"transaction_type\": \"consume\", \"spoiled\": false};\n\n    msg.topic = \"ok\";\n    msg.url = str_URL;\n    msg.payload = json_payload;\n    msg.headers = json_Header;\n\n}else{\n    msg.topic=\"Error\";\n    msg.payload =\"Formato anomalo. Recuerda /c_idproductoxunidades compradas\";\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 860,
+        "y": 120,
+        "wires": [
+            [
+                "b0736fa98267c25b"
+            ]
+        ]
+    },
+    {
+        "id": "6f25c49a7d48374d",
+        "type": "function",
+        "z": "839f19610f7127b1",
+        "name": "buy",
+        "func": "var arr_msg = msg.payload.info.t_cmd.split(\"x\");\nvar arr_Inv = msg.payload.pl;\n\n//check if has the correct format\nvar int_len = arr_msg.length;\nvar int_factor=1;\nvar bol_check=false;\n\nif (int_len >= 2) {\n    var product_id = arr_msg[0];\n\n    var inv_counter = arr_Inv.length;\n\n    //once product is selected, shopping factor must be found\n    for (var j = 0; j < inv_counter; j++) {\n        if (product_id == arr_Inv[j].id) {\n            int_factor = parseFloat(arr_Inv[j].qu_factor_purchase_to_stock);\n            bol_check=true;\n        }\n    }\n\n    var int_amount = parseInt(arr_msg[1]) * int_factor;\n    var int_prize = 0;\n    var dt_DueDate = \"2999-12-12\";\n    var str_Shop = null;\n    if (int_len >= 3) {\n        int_prize = parseFloat(arr_msg[2]) / int_factor;\n    }\n    if (int_len >= 4){\n        str_Shop = arr_msg[3];\n    }\n    if (int_len >= 5) {\n        dt_DueDate =(arr_msg[4]);\n    }\n\n    var str_URL = \"http://\";\n    str_URL = str_URL + msg.payload.info.g_IP;\n    str_URL = str_URL + \"/api/stock/products/\";\n    str_URL = str_URL + product_id;\n    str_URL = str_URL + \"/add\";\n\n    var json_Header = {\n        \"Accept\": \"application/json\", \"Content-Type\": \"application/json\", \"GROCY-API-KEY\": msg.payload.info.g_API, \"cache-control\": \"no-cache\"\n    };\n\n    var json_payload = {\n        \"amount\": int_amount, \"transaction_type\": \"purchase\", \"price\": int_prize, \"best_before_date\": dt_DueDate, \"shopping_location_id\": str_Shop\n    };\n    msg.check = bol_check;\n    msg.topic = \"ok\";\n    msg.url = str_URL;\n    msg.payload = json_payload;\n    //msg.payload = dt_DueDate;\n    msg.headers = json_Header;\n\n} else {\n    msg.topic = \"Wrong format, remember: /b_idxXxYxTxD --> buy X units at y prize with D final date from T shop (Date and shop are optional)\";\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2630,
+        "y": 180,
+        "wires": [
+            [
+                "b0736fa98267c25b",
+                "07fea05515e7233e"
+            ]
+        ]
+    },
+    {
+        "id": "8042daa75eb79f67",
+        "type": "function",
+        "z": "839f19610f7127b1",
+        "name": "Info",
+        "func": "var arr_msg = msg.payload.t_cmd.split(\"x\");\n\n//check if has the correct format\nvar int_len = arr_msg.length;\n\nif (int_len = 1) {\n    var product_id = arr_msg[0];\n\n    var str_URL = \"http://\";\n    str_URL = str_URL + msg.payload.g_IP;\n    str_URL = str_URL + \"/api/stock/products/\";\n    str_URL = str_URL + product_id;\n\n    var json_Header = {\n        \"Accept\": \"application/json\", \"Content-Type\": \"application/json\", \"GROCY-API-KEY\": msg.payload.g_API, \"cache-control\": \"no-cache\"\n    };\n\n    msg.topic = \"ok\";\n    msg.url = str_URL;\n    msg.headers = json_Header;\n\n} else {\n    msg.topic = \"Error\";\n    msg.payload = \"Wrong format see: /help\";\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 850,
+        "y": 280,
+        "wires": [
+            [
+                "fafcceb633f09237"
+            ]
+        ]
+    },
+    {
+        "id": "a3b108c547b66c69",
+        "type": "function",
+        "z": "839f19610f7127b1",
+        "name": "Add to the shopping List",
+        "func": "var arr_msg = msg.payload.t_cmd.split(\"x\");\n\n//check if has the correct format\nvar int_len = arr_msg.length;\n\nif (int_len = 2) {\n    var product_id = arr_msg[0];\n    var int_amount = parseInt(arr_msg[1]);\n    var int_shopList = parseInt(1);\n\n    var str_URL = \"http://\";\n    str_URL = str_URL + msg.payload.g_IP;\n    str_URL = str_URL + \"/api/stock/shoppinglist/add-product\";\n\n    var json_Header = {\n        \"Accept\": \"application/json\", \"Content-Type\": \"application/json\", \"GROCY-API-KEY\": msg.payload.g_API, \"cache-control\": \"no-cache\"\n    };\n\n    var json_payload = {\n        \"product_id\": product_id, \"list_id\": int_shopList, \"product_amount\": int_amount\n    };\n\n    msg.topic = \"ok\";\n    msg.url = str_URL;\n    msg.payload = json_payload;\n    //msg.payload = dt_DueDate;\n    msg.headers = json_Header;\n\n} else {\n    msg.topic=\"Error\"\n    msg.payload = \"Wrong format, remember: /b_idxXxYxTxD --> buy X units at y prize with D final date from T shop (Date and shop are optional)\";\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 970,
+        "y": 360,
+        "wires": [
+            [
+                "1e5703fa26179fca",
+                "6f54be4d8bf7ff70"
+            ]
+        ]
+    },
+    {
+        "id": "964e5a70120e933f",
+        "type": "function",
+        "z": "839f19610f7127b1",
+        "name": "Get product list",
+        "func": "var str_URL = \"http://\";\nstr_URL = str_URL + msg.payload.g_IP;\nstr_URL = str_URL + \"/api/objects/products\";\n\nvar json_Header = {\n    \"Accept\": \"application/json\", \"Content-Type\": \"application/json\", \"GROCY-API-KEY\": msg.payload.g_API, \"cache-control\": \"no-cache\"\n};\n\nmsg.topic = \"ok\";\nmsg.url = str_URL;\nmsg.headers = json_Header;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1300,
+        "y": 520,
+        "wires": [
+            [
+                "db6bc987556c60b2"
+            ]
+        ]
+    },
+    {
+        "id": "aca0483f297f8faa",
+        "type": "comment",
+        "z": "839f19610f7127b1",
+        "name": "WARNING",
+        "info": "borra tu numero de chat",
+        "x": 340,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "b0736fa98267c25b",
+        "type": "switch",
+        "z": "839f19610f7127b1",
+        "name": "Check comand",
+        "property": "topic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "ok",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "Error",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 2800,
+        "y": 140,
+        "wires": [
+            [
+                "13f51fbe7d1584d6",
+                "49038aae4daf75ca",
+                "6599cf9f349bf1bb"
+            ],
+            [
+                "d6fb1441f931bf28"
+            ]
+        ]
+    },
+    {
+        "id": "13f51fbe7d1584d6",
+        "type": "http request",
+        "z": "839f19610f7127b1",
+        "name": "",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 3030,
+        "y": 120,
+        "wires": [
+            [
+                "ecd8538f22b0341b",
+                "636bbbdd716db794"
+            ]
+        ]
+    },
+    {
+        "id": "ecd8538f22b0341b",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 5",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 3260,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "1e5703fa26179fca",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 6",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1200,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "636bbbdd716db794",
+        "type": "change",
+        "z": "839f19610f7127b1",
+        "name": "Done",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "Done",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 3190,
+        "y": 200,
+        "wires": [
+            [
+                "d6fb1441f931bf28"
+            ]
+        ]
+    },
+    {
+        "id": "fafcceb633f09237",
+        "type": "switch",
+        "z": "839f19610f7127b1",
+        "name": "Check comand",
+        "property": "topic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "ok",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "Error",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1460,
+        "y": 420,
+        "wires": [
+            [
+                "f5785f3946244422"
+            ],
+            [
+                "f19d8e0cdf15c5ab"
+            ]
+        ]
+    },
+    {
+        "id": "f5785f3946244422",
+        "type": "http request",
+        "z": "839f19610f7127b1",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 1790,
+        "y": 340,
+        "wires": [
+            [
+                "a100807557436d64",
+                "bf7310b1fd7adaa5"
+            ]
+        ]
+    },
+    {
+        "id": "f19d8e0cdf15c5ab",
+        "type": "function",
+        "z": "839f19610f7127b1",
+        "name": "Telegram msg template",
+        "func": "var str_receive = msg.payload;\nmsg.payload = {};\nmsg.payload.chatId = -\"your chat id\";\nmsg.payload.type = \"message\";\nmsg.payload.content = str_receive;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3390,
+        "y": 460,
+        "wires": [
+            [
+                "292404036da59f94"
+            ]
+        ]
+    },
+    {
+        "id": "a100807557436d64",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 7",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2120,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "bf7310b1fd7adaa5",
+        "type": "function",
+        "z": "839f19610f7127b1",
+        "name": "Get_Important_info",
+        "func": "var json_info=msg.payload;\nvar string_msg= \"Nombre: \";\n\nstring_msg = string_msg + json_info.product.name;\nstring_msg = string_msg +\"\\nInventario: \";\nstring_msg = string_msg + json_info.stock_amount;\n\nmsg.payload = string_msg;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2010,
+        "y": 380,
+        "wires": [
+            [
+                "f19d8e0cdf15c5ab"
+            ]
+        ]
+    },
+    {
+        "id": "6f54be4d8bf7ff70",
+        "type": "switch",
+        "z": "839f19610f7127b1",
+        "name": "Check comand",
+        "property": "topic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "ok",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "Error",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1440,
+        "y": 300,
+        "wires": [
+            [
+                "8814beed251a0713"
+            ],
+            [
+                "d6fb1441f931bf28"
+            ]
+        ]
+    },
+    {
+        "id": "8814beed251a0713",
+        "type": "http request",
+        "z": "839f19610f7127b1",
+        "name": "",
+        "method": "POST",
+        "ret": "bin",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 2910,
+        "y": 220,
+        "wires": [
+            [
+                "636bbbdd716db794"
+            ]
+        ]
+    },
+    {
+        "id": "2efdcd8e0ea0263b",
+        "type": "switch",
+        "z": "839f19610f7127b1",
+        "name": "Check get comand",
+        "property": "payload.t_cmd",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "p",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "l",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 3,
+        "x": 890,
+        "y": 560,
+        "wires": [
+            [
+                "964e5a70120e933f"
+            ],
+            [
+                "361e35cb7bc8b60e",
+                "6118df0c59577f71"
+            ],
+            [
+                "0c530df5360dcb29"
+            ]
+        ]
+    },
+    {
+        "id": "0c530df5360dcb29",
+        "type": "function",
+        "z": "839f19610f7127b1",
+        "name": "Error",
+        "func": "msg.topic = \"Error\"\nmsg.payload = \"Formato erroneo: recuerda /get_l para obtener lista de la compra o /get_p para lista de productos\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1110,
+        "y": 720,
+        "wires": [
+            [
+                "32e5b33bc216e5bd",
+                "d6fb1441f931bf28"
+            ]
+        ]
+    },
+    {
+        "id": "32e5b33bc216e5bd",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 10",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1220,
+        "y": 780,
+        "wires": []
+    },
+    {
+        "id": "db6bc987556c60b2",
+        "type": "http request",
+        "z": "839f19610f7127b1",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 1510,
+        "y": 520,
+        "wires": [
+            [
+                "5b6ed4aa3e48b71a"
+            ]
+        ]
+    },
+    {
+        "id": "58dda3aab818876d",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 12",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload.t_cmd",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 880,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "5b6ed4aa3e48b71a",
+        "type": "function",
+        "z": "839f19610f7127b1",
+        "name": "getProduct String",
+        "func": "var arr_Raw = msg.payload;\nvar str_Result = \"/id Nombre\";\nvar lon_Length = arr_Raw.length;\nfor (var i = 0; i < lon_Length; i++) {\n    str_Result = str_Result + \"\\n/info_\" + arr_Raw[i].id + \" \" + arr_Raw[i].name\n}\n\nmsg.payload=str_Result;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1790,
+        "y": 520,
+        "wires": [
+            [
+                "f19d8e0cdf15c5ab"
+            ]
+        ]
+    },
+    {
+        "id": "ca2e9599126eda5d",
+        "type": "function",
+        "z": "839f19610f7127b1",
+        "name": "Get product list",
+        "func": "var str_IP = msg.payload.g_IP;\nvar str_API = msg.payload.g_API;\nmsg.payload={};\nvar str_URL = \"http://\";\nstr_URL = str_URL + str_IP;\nstr_URL = str_URL + \"/api/objects/products\";\n\nvar json_Header = {\n    \"Accept\": \"application/json\", \"Content-Type\": \"application/json\", \"GROCY-API-KEY\": str_API, \"cache-control\": \"no-cache\"\n};\n\nmsg.topic = \"ok\";\nmsg.url = str_URL;\nmsg.headers = json_Header;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1920,
+        "y": 40,
+        "wires": [
+            [
+                "bfdc94d3747ab7dd",
+                "32e336e62b08d850"
+            ]
+        ]
+    },
+    {
+        "id": "bfdc94d3747ab7dd",
+        "type": "http request",
+        "z": "839f19610f7127b1",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 2130,
+        "y": 40,
+        "wires": [
+            [
+                "d2a289b73c6040d1",
+                "77b1cad58d286238"
+            ]
+        ]
+    },
+    {
+        "id": "0ee90af9a691e5a8",
+        "type": "function",
+        "z": "839f19610f7127b1",
+        "name": "Get shopping List",
+        "func": "var str_IP = msg.payload.info.g_IP;\nvar str_API = msg.payload.info.g_API;\nmsg.payload={};\nvar str_URL = \"http://\";\nstr_URL = str_URL + str_IP;\nstr_URL = str_URL + \"/api/objects/shopping_list\";\n\nvar json_Header = {\n    \"Accept\": \"application/json\", \"Content-Type\": \"application/json\", \"GROCY-API-KEY\": str_API, \"cache-control\": \"no-cache\"\n};\n\nmsg.topic = \"ok\";\nmsg.url = str_URL;\nmsg.headers = json_Header;\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1950,
+        "y": 660,
+        "wires": [
+            [
+                "455acd8ee5ed215b"
+            ]
+        ]
+    },
+    {
+        "id": "455acd8ee5ed215b",
+        "type": "http request",
+        "z": "839f19610f7127b1",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 2230,
+        "y": 660,
+        "wires": [
+            [
+                "f06461cc1e7ab6a1"
+            ]
+        ]
+    },
+    {
+        "id": "d2a289b73c6040d1",
+        "type": "function",
+        "z": "839f19610f7127b1",
+        "name": "get pl",
+        "func": "\n\nmsg.topic=\"pl\";\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2290,
+        "y": 40,
+        "wires": [
+            [
+                "db72a1be776cf941",
+                "012c9fbd44597d77",
+                "b5dd62bd860e07e5"
+            ]
+        ]
+    },
+    {
+        "id": "f06461cc1e7ab6a1",
+        "type": "function",
+        "z": "839f19610f7127b1",
+        "name": "get sl",
+        "func": "\n\nmsg.topic=\"sl\"\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2390,
+        "y": 660,
+        "wires": [
+            [
+                "db72a1be776cf941"
+            ]
+        ]
+    },
+    {
+        "id": "db72a1be776cf941",
+        "type": "join",
+        "z": "839f19610f7127b1",
+        "name": "Join",
+        "mode": "custom",
+        "build": "object",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": false,
+        "timeout": "",
+        "count": "4",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 2590,
+        "y": 640,
+        "wires": [
+            [
+                "b18f4157231f7c86"
+            ]
+        ]
+    },
+    {
+        "id": "012c9fbd44597d77",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 16",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2580,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "b18f4157231f7c86",
+        "type": "json",
+        "z": "839f19610f7127b1",
+        "name": "",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 2730,
+        "y": 640,
+        "wires": [
+            [
+                "ba4cfaa99a3995c3"
+            ]
+        ]
+    },
+    {
+        "id": "ba4cfaa99a3995c3",
+        "type": "function",
+        "z": "839f19610f7127b1",
+        "name": "Order info",
+        "func": "var arr_Raw = msg.payload.sl;\nvar arr_Inv = msg.payload.pl;\nvar arr_sho=msg.payload.shopl;\nvar str_shop = msg.payload.shop;\nvar str_Result = \"id_cmd Name Units\";\nvar lon_Length = arr_Raw.length;\nvar lon_Limit = arr_Inv.length;\nvar int_Shopid=0;\n\nfor (var j = 0; j < arr_sho.length; j++) {\n    if (str_shop == arr_sho[j].name) {\n        int_Shopid = arr_sho[j].id;\n    }\n}\n\nfor (var i = 0; i < lon_Length; i++) {\n    var str_id = arr_Raw[i].product_id;\n    var str_amount = arr_Raw[i].amount;\n\n    for (var j = 0; j < lon_Limit; j++) {\n        if (str_id == arr_Inv[j].id){\n            if (int_Shopid == arr_Inv[j].shopping_location_id) {\n                str_Result = str_Result + \"\\n/x_\" + str_id + \"x\" + str_amount + \"x\" + str_shop + \" \" +arr_Inv[j].name;\n            }else{\n                str_Result = str_Result + \"\\n/x_\" + str_id + \"x\" + str_amount + \" \" + arr_Inv[j].name;\n            }\n        }\n    }\n\n}\nstr_Result = str_Result + \"\\n\";\nstr_Result = str_Result + \"\\n\";\nfor (var i = 0; i < arr_sho.length; i++) {\n    str_Result = str_Result + \"\\n/shop_\" + arr_sho[i].name;\n}\n\nmsg.payload = str_Result;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2880,
+        "y": 640,
+        "wires": [
+            [
+                "f19d8e0cdf15c5ab"
+            ]
+        ]
+    },
+    {
+        "id": "361e35cb7bc8b60e",
+        "type": "function",
+        "z": "839f19610f7127b1",
+        "name": "Load Shopping List",
+        "func": "var str_URL = \"http://\";\nstr_URL = str_URL + msg.payload.g_IP;\nstr_URL = str_URL + \"/api/stock/shoppinglist/add-missing-products\";\n\nvar json_Header = {\n    \"Accept\": \"*/*\", \"Content-Type\": \"application/json\", \"GROCY-API-KEY\": msg.payload.g_API, \"cache-control\": \"no-cache\"\n};\n\nvar json_payload = {\n    \"list_id\": 1\n};\nmsg.payload = json_payload;\nmsg.topic = \"ok\";\nmsg.url = str_URL;\nmsg.headers = json_Header;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1210,
+        "y": 600,
+        "wires": [
+            [
+                "7279013caa56f777",
+                "e4cd9a48b09c1eb4"
+            ]
+        ]
+    },
+    {
+        "id": "7279013caa56f777",
+        "type": "http request",
+        "z": "839f19610f7127b1",
+        "name": "",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 1410,
+        "y": 720,
+        "wires": [
+            [
+                "f702349800d779af",
+                "553537bd2157279a"
+            ]
+        ]
+    },
+    {
+        "id": "f702349800d779af",
+        "type": "join",
+        "z": "839f19610f7127b1",
+        "name": "",
+        "mode": "custom",
+        "build": "object",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": false,
+        "timeout": "",
+        "count": "2",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 1650,
+        "y": 640,
+        "wires": [
+            [
+                "0ee90af9a691e5a8",
+                "b481aba64b850eaf",
+                "390c690246e911f5"
+            ]
+        ]
+    },
+    {
+        "id": "243e22ba65d6b21a",
+        "type": "change",
+        "z": "839f19610f7127b1",
+        "name": "Set topic",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "info",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1480,
+        "y": 600,
+        "wires": [
+            [
+                "f702349800d779af",
+                "ca2e9599126eda5d"
+            ]
+        ]
+    },
+    {
+        "id": "2f1f95757bcd667b",
+        "type": "function",
+        "z": "839f19610f7127b1",
+        "name": "Set current shop",
+        "func": "var arr_shop = msg.payload.t_cmd.toString();\n\nmsg.payload = \"\";\n\nif (arr_shop==\"\"){\n    msg.payload=\"Empty\";\n}else{\n    msg.payload = arr_shop;\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 880,
+        "y": 900,
+        "wires": [
+            [
+                "4d25ccbb019db72b",
+                "107b8b266c7eac19"
+            ]
+        ]
+    },
+    {
+        "id": "4d25ccbb019db72b",
+        "type": "switch",
+        "z": "839f19610f7127b1",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "Empty",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1090,
+        "y": 900,
+        "wires": [
+            [
+                "ab4654940d9f4a7d"
+            ],
+            [
+                "f212401f0e4d91b0",
+                "d6ec7f5848eb1a4e"
+            ]
+        ]
+    },
+    {
+        "id": "ab4654940d9f4a7d",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 20",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1340,
+        "y": 840,
+        "wires": []
+    },
+    {
+        "id": "f212401f0e4d91b0",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 21",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1340,
+        "y": 940,
+        "wires": []
+    },
+    {
+        "id": "d6ec7f5848eb1a4e",
+        "type": "file",
+        "z": "839f19610f7127b1",
+        "name": "Current Shop",
+        "filename": "./shop.txt",
+        "filenameType": "str",
+        "appendNewline": true,
+        "createDir": false,
+        "overwriteFile": "true",
+        "encoding": "none",
+        "x": 2750,
+        "y": 900,
+        "wires": [
+            [
+                "91dd9b6a457f9039",
+                "82cc2b6028291786"
+            ]
+        ]
+    },
+    {
+        "id": "390c690246e911f5",
+        "type": "file in",
+        "z": "839f19610f7127b1",
+        "name": "",
+        "filename": "./shop.txt",
+        "filenameType": "str",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 2040,
+        "y": 780,
+        "wires": [
+            [
+                "964ddc863f4c7c9e"
+            ]
+        ]
+    },
+    {
+        "id": "66b292e4aba4f17b",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 22",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2600,
+        "y": 840,
+        "wires": []
+    },
+    {
+        "id": "91dd9b6a457f9039",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 23",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2960,
+        "y": 900,
+        "wires": []
+    },
+    {
+        "id": "107b8b266c7eac19",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 24",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1060,
+        "y": 960,
+        "wires": []
+    },
+    {
+        "id": "b481aba64b850eaf",
+        "type": "function",
+        "z": "839f19610f7127b1",
+        "name": "Get shop list",
+        "func": "var str_IP = msg.payload.info.g_IP;\nvar str_API = msg.payload.info.g_API;\nmsg.payload={};\nvar str_URL = \"http://\";\nstr_URL = str_URL + str_IP;\nstr_URL = str_URL + \"/api/objects/shopping_locations\";\n\nvar json_Header = {\n    \"Accept\": \"application/json\", \"Content-Type\": \"application/json\", \"GROCY-API-KEY\": str_API, \"cache-control\": \"no-cache\"\n};\n\nmsg.topic = \"ok\";\nmsg.url = str_URL;\nmsg.headers = json_Header;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1930,
+        "y": 560,
+        "wires": [
+            [
+                "0914cd521f94fd46"
+            ]
+        ]
+    },
+    {
+        "id": "0914cd521f94fd46",
+        "type": "http request",
+        "z": "839f19610f7127b1",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 2230,
+        "y": 560,
+        "wires": [
+            [
+                "e96bc5fd7e678767"
+            ]
+        ]
+    },
+    {
+        "id": "e96bc5fd7e678767",
+        "type": "function",
+        "z": "839f19610f7127b1",
+        "name": "get shop list",
+        "func": "\n\nmsg.topic=\"shopl\";\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2410,
+        "y": 560,
+        "wires": [
+            [
+                "db72a1be776cf941",
+                "1bd3388933c59874"
+            ]
+        ]
+    },
+    {
+        "id": "82cc2b6028291786",
+        "type": "change",
+        "z": "839f19610f7127b1",
+        "name": "Done",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "Done",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2950,
+        "y": 740,
+        "wires": [
+            [
+                "f19d8e0cdf15c5ab"
+            ]
+        ]
+    },
+    {
+        "id": "dd783137d4d7c48d",
+        "type": "switch",
+        "z": "839f19610f7127b1",
+        "name": "",
+        "property": "payload.t_cmd",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "es",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 850,
+        "y": 1160,
+        "wires": [
+            [
+                "aa47c3bba3844dd1",
+                "e4a2e2b98518c39e"
+            ],
+            [
+                "4ae14815c55c90d6"
+            ]
+        ]
+    },
+    {
+        "id": "aa47c3bba3844dd1",
+        "type": "function",
+        "z": "839f19610f7127b1",
+        "name": "Spanish",
+        "func": "var str_msg=\"BIENVENIDO A TU ASISTENTE DE COMPRAS\\n\\n\";\n\nstr_msg = str_msg+ \"He sido creado para facilitarte la gestión de tus compras. Se organizad@ y verás que bien trabajamos juntos\\n\\n\";\nstr_msg = str_msg + \"¿Que quieres hacer? Te voy a mostrar los comandos disponibles:\\n\\n\";\nstr_msg = str_msg + \"COMPRAR: '/b_idxunidadesxprecioporunidadxtiendaxfechadecaducidad'\\n\";\nstr_msg = str_msg + \"id y unidades son obligatorias, el resto se introduciran en blanco en caso de omitirlas\\n\\n\";\n\nstr_msg = str_msg + \"CONSUMIR: '/c_idxunidades'\\n\";\nstr_msg = str_msg + \"te ayudara a ir reduciendo el stock y que se añadan de forma automatica a la lista de la compra\\n\\n\";\nstr_msg = str_msg + \"AÑADIR A LISTA DE COMPRA: '/a_idxunidades'\\n\";\nstr_msg = str_msg + \"Si no eres constante con el control de consumo, también podrás añadirlo a la lista de la compra de forma manual\\n\\n\";\nstr_msg = str_msg + \"ELIMINAR DE LISTA DE COMPRA: '/r_id'\\n\\n\";\n\nstr_msg = str_msg + \"PEDIR LISTA DE PRODUCTOS: '/get_p'\\n\\n\";\nstr_msg = str_msg + \"PEDIR LISTA DE LA COMPRA: '/get_l'\\n\\n\";\nstr_msg = str_msg + \"CONSULTAR STOCK INDIVIDUAL: '/info_id'\\n\\n\";\n\nstr_msg = str_msg + \"ESTABLECER TIENDA: '/shop_name'\\n\";\nstr_msg = str_msg + \"Cuando vas a comprar y solicitas la lista de la compra, creare los comandos de compra para todos los elementos que habitualmente compres en esa tienda, agilizando el proceso de compra\\n\\n\";\n\n//str_msg = str_msg + \"BUSCAR: '/s_letter'\\n\";\n//str_msg = str_msg + \"buscará todos los elementos que coincidan con el string\";\n\nmsg.payload=str_msg;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2900,
+        "y": 1120,
+        "wires": [
+            [
+                "f19d8e0cdf15c5ab"
+            ]
+        ]
+    },
+    {
+        "id": "4ae14815c55c90d6",
+        "type": "function",
+        "z": "839f19610f7127b1",
+        "name": "English",
+        "func": "var str_msg = \"WELCOME TO GROCY ASSISTANT\\n\\n\";\n\nstr_msg = str_msg + \"I've been developed to make easier your shopping process. Be organized and we enjoy to work together\\n\\n\";\nstr_msg = str_msg + \"What would you like to do? See the available commands:\\n\\n\";\nstr_msg = str_msg + \"BUY: '/b_idxunitsxprizexshopnamexdue_date'\\n\";\nstr_msg = str_msg + \"id and unit are required, rest could be omited\\n\\n\";\n\nstr_msg = str_msg + \"CONSUME: '/c_idxunits'\\n\";\nstr_msg = str_msg + \"this command help you to control the available stock\\n\\n\";\nstr_msg = str_msg + \"ADD TO SHOPPING LIST: '/a_idxunits'\\n\";\nstr_msg = str_msg + \"If you define a minimum amount in the product sheet, it will be added automatically, if not, you could add it using this command\\n\\n\";\nstr_msg = str_msg + \"REMOVE FROM THE SHOPPING LIST: '/r_idxunits'\\n\\n\";\n\nstr_msg = str_msg + \"CHECK PRODUCT LIST: '/get_p'\\n\\n\";\nstr_msg = str_msg + \"CHECK SHOPPING LIST: '/get_l'\\n\\n\";\nstr_msg = str_msg + \"CHECK INVENTORY '/info_id'\\n\\n\";\n\nstr_msg = str_msg + \"SET SHOP: '/shop_name'\\n\";\nstr_msg = str_msg + \"this is the one that will be used to generate the buy command\\n\\n\";\n\nmsg.payload = str_msg;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2900,
+        "y": 1220,
+        "wires": [
+            [
+                "f19d8e0cdf15c5ab"
+            ]
+        ]
+    },
+    {
+        "id": "1a5c144f76736501",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 25",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 900,
+        "y": 1100,
+        "wires": []
+    },
+    {
+        "id": "e4a2e2b98518c39e",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 26",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1120,
+        "y": 1120,
+        "wires": []
+    },
+    {
+        "id": "b5dd62bd860e07e5",
+        "type": "join",
+        "z": "839f19610f7127b1",
+        "name": "",
+        "mode": "custom",
+        "build": "object",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": false,
+        "timeout": "",
+        "count": "2",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 2270,
+        "y": 200,
+        "wires": [
+            [
+                "9c3806a34234b94e",
+                "acf82a18a48b4db1"
+            ]
+        ]
+    },
+    {
+        "id": "0f89fdb56eecf26b",
+        "type": "change",
+        "z": "839f19610f7127b1",
+        "name": "set topic",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "info",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1460,
+        "y": 220,
+        "wires": [
+            [
+                "b5dd62bd860e07e5",
+                "0ffbc6edaeae224a",
+                "ca2e9599126eda5d"
+            ]
+        ]
+    },
+    {
+        "id": "9c3806a34234b94e",
+        "type": "json",
+        "z": "839f19610f7127b1",
+        "name": "",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 2470,
+        "y": 200,
+        "wires": [
+            [
+                "6f25c49a7d48374d",
+                "bab70c10504f1b4f"
+            ]
+        ]
+    },
+    {
+        "id": "acf82a18a48b4db1",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 27",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2520,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "0ffbc6edaeae224a",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 28",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1880,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "32e336e62b08d850",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 29",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2100,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "77b1cad58d286238",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 30",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2300,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "07fea05515e7233e",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 31",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "check",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2820,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "964ddc863f4c7c9e",
+        "type": "function",
+        "z": "839f19610f7127b1",
+        "name": "get shop",
+        "func": "msg.topic=\"shop\";\nmsg.payload = msg.payload.slice(0, -1);\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2360,
+        "y": 780,
+        "wires": [
+            [
+                "66b292e4aba4f17b",
+                "db72a1be776cf941",
+                "e9ea5c24082191c2"
+            ]
+        ]
+    },
+    {
+        "id": "1bd3388933c59874",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 32",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2660,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "8c7d7402ed07c984",
+        "type": "function",
+        "z": "839f19610f7127b1",
+        "name": "read command",
+        "func": "var arr_msg = msg.payload.t_cmd.split(\"x\");\n\n//check if has the correct format\nvar int_len = arr_msg.length;\n\nif (int_len >= 2) {\n    msg.payload.myproduct_id = arr_msg[0];\n    msg.payload.myamount = parseInt(arr_msg[1]);\n    msg.topic = \"ok\";\n\n} else {\n    msg.topic = \"Error\";\n    msg.payload = \"Formato anomalo. Recuerda /c_idproductoxunidades compradas\";\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 880,
+        "y": 1280,
+        "wires": [
+            [
+                "5562396de170df4e",
+                "390c690246e911f5"
+            ]
+        ]
+    },
+    {
+        "id": "82503c116884ca76",
+        "type": "file",
+        "z": "839f19610f7127b1",
+        "name": "Current Shop",
+        "filename": "./shop.txt",
+        "filenameType": "str",
+        "appendNewline": true,
+        "createDir": false,
+        "overwriteFile": "true",
+        "encoding": "none",
+        "x": 590,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "12debcd859c14d42",
+        "type": "inject",
+        "z": "839f19610f7127b1",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 180,
+        "y": 120,
+        "wires": [
+            [
+                "10ab02be6bd999c2"
+            ]
+        ]
+    },
+    {
+        "id": "10ab02be6bd999c2",
+        "type": "function",
+        "z": "839f19610f7127b1",
+        "name": "Generico",
+        "func": "msg.payload = \"Generico\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 380,
+        "y": 120,
+        "wires": [
+            [
+                "82503c116884ca76"
+            ]
+        ]
+    },
+    {
+        "id": "5562396de170df4e",
+        "type": "switch",
+        "z": "839f19610f7127b1",
+        "name": "",
+        "property": "topic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "Error",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1130,
+        "y": 1280,
+        "wires": [
+            [
+                "d6fb1441f931bf28"
+            ],
+            [
+                "e9ea5c24082191c2"
+            ]
+        ]
+    },
+    {
+        "id": "e9ea5c24082191c2",
+        "type": "join",
+        "z": "839f19610f7127b1",
+        "name": "Join",
+        "mode": "custom",
+        "build": "object",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": false,
+        "timeout": "",
+        "count": "2",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 2590,
+        "y": 1300,
+        "wires": [
+            [
+                "45c7c8d47d781ffb"
+            ]
+        ]
+    },
+    {
+        "id": "45c7c8d47d781ffb",
+        "type": "json",
+        "z": "839f19610f7127b1",
+        "name": "",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 2730,
+        "y": 1300,
+        "wires": [
+            [
+                "3c399ffd7723d8bc",
+                "46af3c7076acc702"
+            ]
+        ]
+    },
+    {
+        "id": "3c399ffd7723d8bc",
+        "type": "function",
+        "z": "839f19610f7127b1",
+        "name": "get purchase command",
+        "func": "var arr_shop=msg.payload.shop;\nvar arr_msg = msg.payload.ok;\n\nvar str_Result = \"/b_\" + arr_msg.myproduct_id + \"x\" + arr_msg.myamount; \nstr_Result = str_Result + \"x0x\" + arr_shop + \"x2999-12-12\"; \n\nmsg.payload = str_Result;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2990,
+        "y": 1300,
+        "wires": [
+            [
+                "f19d8e0cdf15c5ab",
+                "c95379893e20fff2"
+            ]
+        ]
+    },
+    {
+        "id": "46af3c7076acc702",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 33",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2880,
+        "y": 1380,
+        "wires": []
+    },
+    {
+        "id": "c95379893e20fff2",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 34",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 3260,
+        "y": 1300,
+        "wires": []
+    },
+    {
+        "id": "2add782d4b9bbb69",
+        "type": "function",
+        "z": "839f19610f7127b1",
+        "name": "Remove",
+        "func": "var arr_msg = msg.payload.t_cmd.split(\"x\");\n\n//check if has the correct format\nvar int_len = arr_msg.length;\nvar amount = 1;\nif (int_len >= 1) {\n    var product_id = arr_msg[0];\n    if (int_len > 1) {\n        amount = arr_msg[1];\n    }\n    var str_URL = \"http://\";\n    str_URL = str_URL + msg.payload.g_IP;\n    str_URL = str_URL + \"/api/stock/shoppinglist/remove-product\";\n\n    var json_Header = {\n        \"Accept\": \"application/json\", \"Content-Type\": \"application/json\", \"GROCY-API-KEY\": msg.payload.g_API, \"cache-control\": \"no-cache\"\n    };\n    var json_payload = {\n        \"product_id\": product_id, \"list_id\": 1, \"product_amount\": amount\n        };\n\n    msg.topic = \"ok\";\n    msg.url = str_URL;\n    msg.payload = json_payload;\n    msg.headers = json_Header;\n\n} else {\n    msg.topic = \"Error\";\n    msg.payload = \"Wrong format see: /help\";\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 860,
+        "y": 1380,
+        "wires": [
+            [
+                "371328a8cbda27ce",
+                "42d179573d9a3d1c"
+            ]
+        ]
+    },
+    {
+        "id": "371328a8cbda27ce",
+        "type": "switch",
+        "z": "839f19610f7127b1",
+        "name": "Check comand",
+        "property": "topic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "ok",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "Error",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1200,
+        "y": 1380,
+        "wires": [
+            [
+                "4309c674b380d61a",
+                "d824e65dad3a32ca"
+            ],
+            [
+                "f19d8e0cdf15c5ab"
+            ]
+        ]
+    },
+    {
+        "id": "4309c674b380d61a",
+        "type": "http request",
+        "z": "839f19610f7127b1",
+        "name": "",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 1470,
+        "y": 1380,
+        "wires": [
+            [
+                "f6932de0e3a2fe22",
+                "88f3bfdadd7f6a0d"
+            ]
+        ]
+    },
+    {
+        "id": "6c38c5ab1ca4b0ad",
+        "type": "function",
+        "z": "839f19610f7127b1",
+        "name": "ask shopping list",
+        "func": "var str_API = msg.payload.info.g_API;\nvar str_IP = msg.payload.info.g_IP;\nmsg.payload = {};\n\nmsg.payload.g_API = str_API;\nmsg.payload.g_IP = str_IP;\nmsg.topic = \"/get\";\nmsg.payload.t_cmd = \"l\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2210,
+        "y": 1380,
+        "wires": [
+            [
+                "b5a56b6a8f1d5e7d",
+                "4877bce343d203cd"
+            ]
+        ]
+    },
+    {
+        "id": "e4cd9a48b09c1eb4",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 35",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "url",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1420,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "4877bce343d203cd",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 36",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload.t_cmd",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2460,
+        "y": 1380,
+        "wires": []
+    },
+    {
+        "id": "6118df0c59577f71",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 37",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1160,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "5aea33ce0f69bc49",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 38",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload.t_cmd",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 580,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "553537bd2157279a",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 39",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1640,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "3ebec91731998198",
+        "type": "function",
+        "z": "839f19610f7127b1",
+        "name": "Remove Command",
+        "func": "var str_msg = msg.payload.info.info.t_cmd;\nvar str_API = msg.payload.info.info.g_API;\nvar str_IP = msg.payload.info.info.g_IP;\nmsg.payload={};\nmsg.payload.t_cmd = str_msg;\nmsg.payload.g_API = str_API;\nmsg.payload.g_IP = str_IP;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 490,
+        "y": 1380,
+        "wires": [
+            [
+                "2add782d4b9bbb69",
+                "9bb4799977bef1ec",
+                "0303795744b34273"
+            ]
+        ]
+    },
+    {
+        "id": "514b972e121b1120",
+        "type": "json",
+        "z": "839f19610f7127b1",
+        "name": "",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 3490,
+        "y": 60,
+        "wires": [
+            [
+                "8560e444564a4246",
+                "3ebec91731998198",
+                "e18e5652ddd0eaa8",
+                "226902bd9a4c6b2a",
+                "36ef92f938d3f2c5"
+            ]
+        ]
+    },
+    {
+        "id": "8560e444564a4246",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 40",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload.info.pl",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 3700,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "49038aae4daf75ca",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 4",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2920,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "e18e5652ddd0eaa8",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 41",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload.info.info",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 3720,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "226902bd9a4c6b2a",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 42",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload.info.info.t_cmd",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 3720,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "36ef92f938d3f2c5",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 43",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 3720,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "9bb4799977bef1ec",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 44",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 660,
+        "y": 1320,
+        "wires": []
+    },
+    {
+        "id": "6599cf9f349bf1bb",
+        "type": "trigger",
+        "z": "839f19610f7127b1",
+        "name": "",
+        "op1": "1",
+        "op2": "0",
+        "op1type": "str",
+        "op2type": "str",
+        "duration": "0",
+        "extend": false,
+        "overrideDelay": false,
+        "units": "ms",
+        "reset": "reset",
+        "bytopic": "all",
+        "topic": "topic",
+        "outputs": 1,
+        "x": 3140,
+        "y": 40,
+        "wires": [
+            [
+                "bab70c10504f1b4f"
+            ]
+        ]
+    },
+    {
+        "id": "bab70c10504f1b4f",
+        "type": "join",
+        "z": "839f19610f7127b1",
+        "name": "",
+        "mode": "custom",
+        "build": "object",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": false,
+        "timeout": "",
+        "count": "2",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 3330,
+        "y": 40,
+        "wires": [
+            [
+                "514b972e121b1120",
+                "7d3739989cb0d436"
+            ]
+        ]
+    },
+    {
+        "id": "e7e129c3ddda949e",
+        "type": "join",
+        "z": "839f19610f7127b1",
+        "name": "",
+        "mode": "custom",
+        "build": "object",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": false,
+        "timeout": "",
+        "count": "2",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 1810,
+        "y": 1460,
+        "wires": [
+            [
+                "e142b6225f5fd90f",
+                "9c0504139cf4fea5"
+            ]
+        ]
+    },
+    {
+        "id": "e142b6225f5fd90f",
+        "type": "json",
+        "z": "839f19610f7127b1",
+        "name": "",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 1990,
+        "y": 1420,
+        "wires": [
+            [
+                "6c38c5ab1ca4b0ad"
+            ]
+        ]
+    },
+    {
+        "id": "9c0504139cf4fea5",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 45",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2000,
+        "y": 1500,
+        "wires": []
+    },
+    {
+        "id": "42d179573d9a3d1c",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 46",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1140,
+        "y": 1480,
+        "wires": []
+    },
+    {
+        "id": "f6932de0e3a2fe22",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 47",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1800,
+        "y": 1360,
+        "wires": []
+    },
+    {
+        "id": "d824e65dad3a32ca",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 48",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "url",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1640,
+        "y": 1320,
+        "wires": []
+    },
+    {
+        "id": "88f3bfdadd7f6a0d",
+        "type": "change",
+        "z": "839f19610f7127b1",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "go",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1650,
+        "y": 1420,
+        "wires": [
+            [
+                "e7e129c3ddda949e"
+            ]
+        ]
+    },
+    {
+        "id": "0303795744b34273",
+        "type": "change",
+        "z": "839f19610f7127b1",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "info",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 870,
+        "y": 1520,
+        "wires": [
+            [
+                "e7e129c3ddda949e"
+            ]
+        ]
+    },
+    {
+        "id": "4d83fe89ad8b169c",
+        "type": "inject",
+        "z": "839f19610f7127b1",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "00 20 * * *",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 190,
+        "y": 60,
+        "wires": [
+            [
+                "3eed9320bcd4bd33"
+            ]
+        ]
+    },
+    {
+        "id": "3eed9320bcd4bd33",
+        "type": "function",
+        "z": "839f19610f7127b1",
+        "name": "Volatile",
+        "func": "var g_API = \"your api key\";\nvar g_IP = \"your ip\";\n\nvar str_URL = \"http://\";\nstr_URL = str_URL + g_IP;\nstr_URL = str_URL + \"/api/stock/volatile\";\n\nvar json_Header = {\n    \"Accept\": \"application/json\", \"Content-Type\": \"application/json\", \"GROCY-API-KEY\": g_API, \"cache-control\": \"no-cache\"\n};\n\nmsg.url = str_URL;\nmsg.headers = json_Header;\n\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 380,
+        "y": 60,
+        "wires": [
+            [
+                "7a0ec0f0ea9d2c94"
+            ]
+        ]
+    },
+    {
+        "id": "7a0ec0f0ea9d2c94",
+        "type": "http request",
+        "z": "839f19610f7127b1",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 610,
+        "y": 60,
+        "wires": [
+            [
+                "36a977bf482c0c89",
+                "c8ba7000b63fd178"
+            ]
+        ]
+    },
+    {
+        "id": "36a977bf482c0c89",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 49",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 820,
+        "y": 20,
+        "wires": []
+    },
+    {
+        "id": "6f9bae433c261b2b",
+        "type": "comment",
+        "z": "839f19610f7127b1",
+        "name": "WARNING",
+        "info": "numero de chat",
+        "x": 380,
+        "y": 20,
+        "wires": []
+    },
+    {
+        "id": "c8ba7000b63fd178",
+        "type": "function",
+        "z": "839f19610f7127b1",
+        "name": "prepare msg",
+        "func": "var arr_due=msg.payload.due_products;\nvar arr_over = msg.payload.overdue_products;\nvar arr_exp = msg.payload.expired_products;\n\nvar str_msg=\"ATENCION\\n\\nEstan cerca de caducar:\\n\";\n\nfor (var j = 0; j < arr_due.length; j++) {\n    str_msg = str_msg + arr_due[j].product.name + \" \" + arr_due[j].best_before_date + \"\\n\";\n}\nfor (var j = 0; j < arr_over.length; j++) {\n    str_msg = str_msg + \"Ya caducados:\\n\";\n    }\n\nfor (var j = 0; j < arr_over.length; j++) {\n    str_msg = str_msg + arr_over[j].product.name + \" \" + arr_over[j].best_before_date + \"\\n\";\n}\n\nfor (var j = 0; j < arr_exp.length; j++) {\n    str_msg = str_msg + arr_exp[j].product.name + \" \" + arr_exp[j].best_before_date + \"\\n\";\n}\n\nmsg.payload=str_msg;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 830,
+        "y": 60,
+        "wires": [
+            [
+                "f8f8a099c1b7493a",
+                "7fe03748b02c5416"
+            ]
+        ]
+    },
+    {
+        "id": "03fb39db79458663",
+        "type": "comment",
+        "z": "839f19610f7127b1",
+        "name": "WARNING",
+        "info": "numero de chat",
+        "x": 3340,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "9eae9af03c57318c",
+        "type": "comment",
+        "z": "839f19610f7127b1",
+        "name": "WARNING",
+        "info": " numero de chat",
+        "x": 3340,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "0c9d0cb4050e8549",
+        "type": "comment",
+        "z": "839f19610f7127b1",
+        "name": "WARNING",
+        "info": " numero de chat",
+        "x": 1060,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "f8f8a099c1b7493a",
+        "type": "function",
+        "z": "839f19610f7127b1",
+        "name": "Telegram msg template",
+        "func": "var str_receive = msg.payload;\nmsg.payload = {};\nmsg.payload.chatId = -\"your chat id\";\nmsg.payload.type = \"message\";\nmsg.payload.content = str_receive;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1110,
+        "y": 60,
+        "wires": [
+            [
+                "a2efd098a731b084"
+            ]
+        ]
+    },
+    {
+        "id": "a2efd098a731b084",
+        "type": "telegram sender",
+        "z": "839f19610f7127b1",
+        "name": "Home",
+        "bot": "05848914f7d630a7",
+        "haserroroutput": false,
+        "outputs": 1,
+        "x": 1370,
+        "y": 60,
+        "wires": [
+            [
+                "c46328a1895f33d1"
+            ]
+        ]
+    },
+    {
+        "id": "c46328a1895f33d1",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 50",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1580,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "7fe03748b02c5416",
+        "type": "debug",
+        "z": "839f19610f7127b1",
+        "name": "debug 51",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1120,
+        "y": 20,
+        "wires": []
+    },
+    {
+        "id": "7d3739989cb0d436",
+        "type": "change",
+        "z": "839f19610f7127b1",
+        "name": "reset trigger",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "reset",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 3250,
+        "y": 100,
+        "wires": [
+            [
+                "6599cf9f349bf1bb"
+            ]
+        ]
+    },
+    {
+        "id": "b45e8c8b8464b088",
+        "type": "telegram bot",
+        "botname": "YOUR BOT",
+        "usernames": "",
+        "chatids": "",
+        "baseapiurl": "",
+        "updatemode": "polling",
+        "pollinterval": "300",
+        "usesocks": false,
+        "sockshost": "",
+        "socksport": "6667",
+        "socksusername": "anonymous",
+        "sockspassword": "",
+        "bothost": "",
+        "botpath": "",
+        "localbotport": "8443",
+        "publicbotport": "8443",
+        "privatekey": "",
+        "certificate": "",
+        "useselfsignedcertificate": false,
+        "sslterminated": false,
+        "verboselogging": false
+    },
+    {
+        "id": "05848914f7d630a7",
+        "type": "telegram bot",
+        "botname": "YOUR BOT",
+        "usernames": "",
+        "chatids": "",
+        "baseapiurl": "",
+        "updatemode": "polling",
+        "pollinterval": "300",
+        "usesocks": false,
+        "sockshost": "",
+        "socksport": "6667",
+        "socksusername": "anonymous",
+        "sockspassword": "",
+        "bothost": "",
+        "botpath": "",
+        "localbotport": "8443",
+        "publicbotport": "8443",
+        "privatekey": "",
+        "certificate": "",
+        "useselfsignedcertificate": false,
+        "sslterminated": false,
+        "verboselogging": false
+    }
+]
