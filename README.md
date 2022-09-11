@@ -41,7 +41,7 @@ This feature helps you to control check stocks level. It works below the next co
 
 /info is the main command, it is used by a switch to control flow. After check that, Node red send to a function where id is checked and grocy API call is build. Then a switch check if function result is correct and send the API call. Then, API answer is extracted and it is send to the telegram builder
 
-#### 2.1.4 Info
+#### 2.1.4 Product list
 
 This feature helps you to check id and names. It works below the next command:
 
@@ -59,5 +59,20 @@ This feature helps you add items to the shopping list. Also if you defined a min
 
 #### 2.1.6 Buy
 
+This feature helps you add items to the inventory from the shop:
+
+/b_itemxunitsxprizexshopxdate
+
+item id and units you buy are mandatory, while the other are just an option. If you dont specify, 0 cost and no due date will be specified.
+
+#### 2.1.7 Shopping list
+
+This feature helps you to check your shopping list each time you want. 
+
+/get_l
+
+Once you send the command, Grocy assistant check all items below the minimum level you define and add it to the shopping list. Then it show to you.
+
+## 3. Analysis
 
 IMPORTANTE añadir Generico en la lista de tiendas y lanzar el inject antes de usar el grocy assistant
